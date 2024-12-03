@@ -20,4 +20,4 @@ const userschema = new mongoose.Schema({
 
 const user = mongoose.model('User',userschema);
 
-export default UserActivation;
+export default user;
