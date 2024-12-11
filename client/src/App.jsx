@@ -9,13 +9,13 @@ import Header from './Components/Header';
 import PrivateRoute from './Components/PrivateRoute';
 
 
-
 export default function App() {
   
   return (
     <BrowserRouter>
     <Header/>
     <Routes>
+    
       <Route path="/" element={<Properties/>}/>
       <Route path="/sign-in" element={<Signin  />}/>
       <Route path="/sign-Up" element={ <Signup />}/>
