@@ -6,30 +6,38 @@ export const test = (req,res)=>{
     res.json({
         message:'Api route is working!',
     });
-};
-
-export const updateuser = async(req,res,next)=>{
-    if(req.user.id !== req.params.id) 
-        return next(errorHandler(401,"You can only update your own account!"));
-    try{
-if(req.body.password ){
-    req.body.password = bcryptjs.hashSync(req.nody.password,10)
-}
-
-const updateuser = await User.findByIdAndUpdate(req.params.id ,{
-    $set:{
-        username:req.body.username,
-        email: req.body.email,
-        password:req.body.password,
-        avatar:req.body.avatar,
-
+};export const updateuser = async (req, res, next) => {
+    if (req.user.id !== req.params.id) {
+      return next(errorHandler(401, "You can only update your own account!"));
     }
-},{new:true})
-
-
-const {password,...rest} = updateuser._doc
-res.status(200).json(rest);
-    }catch(error){
-        next(error)
+  
+    try {
+      // Prepare updated fields
+      const updatedFields = { ...req.body };
+  
+      // Hash the password only if provided
+      if (req.body.password && req.body.password.trim() !== '') {
+        updatedFields.password = bcryptjs.hashSync(req.body.password, 10);
+      }
+  
+      // Update the user in the database
+      const updatedUser = await User.findByIdAndUpdate(
+        req.params.id,
+        { $set: updatedFields },
+        { new: true }
+      );
+  
+      // Check if user exists
+      if (!updatedUser) {
+        return next(errorHandler(404, "User not found"));
+      }
+  
+      // Exclude the password from the response
+      const { password, ...rest } = updatedUser._doc;
+      res.status(200).json(rest);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      next(error);
     }
-}
+  };
+  
