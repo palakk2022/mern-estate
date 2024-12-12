@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import userRouter from './routes/user.routes.js';
 import authRouter from './routes/auth.route.js';
 import cookieParser from 'cookie-parser';
+import listingRouter from './routes/listing.route.js';
 import { handleErrors } from './utils/handleErrors.js';  // Import the global error handler
 
 dotenv.config();
@@ -26,7 +27,7 @@ app.use(cookieParser()); // For parsing cookies
 // Route handling
 app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
-
+app.use('/api/listing', listingRouter);
 // Add the global error handler at the end of all routes
 app.use(handleErrors);  // This middleware will catch any errors from previous middlewares
 
