@@ -13,8 +13,12 @@ import {
   updateUserStart,
   deleteUserFailure,
   deleteUserStart,
-  deleteUserSuccess
+  deleteUserSuccess,
+  signoutUserStart,
+  signoutUserSuccess,
+  signoutUserFailure
 } from '../redux/user/userSlice';
+import { FcNext } from 'react-icons/fc';
 
 export default function Profile() {
   const fileRef = useRef(null);
@@ -88,6 +92,7 @@ const [updateSuccess,setUpdateSuccess]= useState(false);
         },
         body: JSON.stringify(formData),
       });
+     
 
       const data = await res.json();
 
@@ -124,7 +129,24 @@ const [updateSuccess,setUpdateSuccess]= useState(false);
          }
 
 
+         const handleSignOut = async ()=>{
+          try{
 
+            dispatch(signoutUserStart());
+                   const res = await fetch('/api/auth/signOut' ,{
+                    method: 'GET',
+                    credentials: 'include', // Include cookies in the request
+                   });
+                   const data = await res.json();
+                   if(data.success === false ){
+                    dispatch(signoutUserFailure(data.message));
+                    return;
+                   }
+                   dispatch(signoutUserSuccess(data));
+          }catch(error){
+            dispatch(signoutUserFailure(data.message))
+          }
+         }
 
 
 
@@ -143,7 +165,7 @@ const [updateSuccess,setUpdateSuccess]= useState(false);
         <img
           onClick={() => fileRef.current.click()}
           src={formData.avatar || 'default-avatar.jpg'}
-          alt='profile'
+          alt='Profile'
           className='rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2'
         />
         <p className='text-sm self-center'>
@@ -193,7 +215,7 @@ const [updateSuccess,setUpdateSuccess]= useState(false);
       </form>
       <div className='flex  justify-between'>
         <span onClick={handleDeleteUser}className='text-red-700 rounded-lg'>Delete Account</span>
-        <span className='text-red-700 rounded-lg'>sign out</span>
+        <span onClick={handleSignOut}className='text-red-700 rounded-lg'>sign out</span>
       </div>
 
       <p className='text-green-700 mt-5'>{updateSuccess ? 'user is updated successfully': ''}</p>
