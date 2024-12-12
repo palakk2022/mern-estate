@@ -11,6 +11,9 @@ import {
   updateUserFailure,
   updateUserSuccess,
   updateUserStart,
+  deleteUserFailure,
+  deleteUserStart,
+  deleteUserSuccess
 } from '../redux/user/userSlice';
 
 export default function Profile() {
@@ -102,6 +105,29 @@ const [updateSuccess,setUpdateSuccess]= useState(false);
       dispatch(updateUserFailure(error.message));
     }
   };
+         const handleDeleteUser = async()=>{
+          try{
+                   dispatch(deleteUserStart());
+                   const res = await fetch(`/api/user/delete/${currentUser._id}`,{
+                    method:'DELETE',
+                   });
+                   const data = await res.json();
+                   if(data.success === false ){
+                    dispatch(deleteUserFailure(data.message));
+                    return;
+                  
+                   }
+          dispatch(deleteUserSuccess(data));
+          }catch(error){
+            dispatch(deleteUserFailure(error.message))
+          }
+         }
+
+
+
+
+
+
 
   return (
     <div className='p-3 max-w-lg mx-auto'>
@@ -166,10 +192,10 @@ const [updateSuccess,setUpdateSuccess]= useState(false);
         </button>
       </form>
       <div className='flex  justify-between'>
-        <span className='text-red-700 rounded-lg'>Delete Account</span>
+        <span onClick={handleDeleteUser}className='text-red-700 rounded-lg'>Delete Account</span>
         <span className='text-red-700 rounded-lg'>sign out</span>
       </div>
-      <p className='text-red-700 mt-5'>{error ? error: ''}</p>
+
       <p className='text-green-700 mt-5'>{updateSuccess ? 'user is updated successfully': ''}</p>
     </div>
   );
