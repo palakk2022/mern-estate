@@ -7,6 +7,7 @@ import Contactus from './Pages/Contactus';
 import Profile from './Pages/Profile';
 import Header from './Components/Header';
 import PrivateRoute from './Components/PrivateRoute';
+import CreateListing from './Pages/CreateListing';
 
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
       <Route path="/contact-us" element={<Contactus/>}/>
       <Route   element={<PrivateRoute />}>
       <Route path="/profile" element={<Profile />}/>
+      <Route path="/create-listing" element={<CreateListing />}/>
      
     </Route>
         </Routes>
