@@ -59,11 +59,11 @@ export const test = (req,res)=>{
   
   export const getUserListings = async (req, res, next) => {
     try {
-      const { userRef } = req.params;
+      const { id } = req.params; // Correct parameter name from the route
   
-      // Check if the authenticated user's ID matches the userRef
-      if (req.user.id === userRef) {
-        const listings = await Listing.find({ userRef });
+      // Check if the authenticated user's ID matches the requested user ID
+      if (req.user.id === id) {
+        const listings = await Listing.find({ userRef: id }); // Use userRef field in the database
         if (!listings.length) {
           return res.status(404).json({ message: 'No listings found for this user.' });
         }
@@ -75,4 +75,5 @@ export const test = (req,res)=>{
       next(error);
     }
   };
+  
   

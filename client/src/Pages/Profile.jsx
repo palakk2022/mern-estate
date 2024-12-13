@@ -19,7 +19,7 @@ import {
   signoutUserFailure
 } from '../redux/user/userSlice';
 import {Link} from 'react-router-dom';
-
+import Cookies from 'js-cookie'; // Import js-cookie to handle cookies
 export default function Profile() {
   const fileRef = useRef(null);
   const { currentUser,loading ,error } = useSelector((state) => state.user);
@@ -29,7 +29,9 @@ export default function Profile() {
   const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
-const [updateSuccess,setUpdateSuccess]= useState(false);
+  const [updateSuccess,setUpdateSuccess]= useState(false);
+  const [showListingsError,setshowListingsError] = useState(false);
+  const [userListing,setUserListing]= useState([]);
   // Initialize formData with current user values
   useEffect(() => {
     setFormData({
@@ -148,9 +150,32 @@ const [updateSuccess,setUpdateSuccess]= useState(false);
           }
          }
 
-
-
-
+         const handleShowListings = async () => {
+          setshowListingsError(false);
+        
+          try {
+           const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NWE4NzUzNmRhNDhiMTI5NDViYTljNyIsImlhdCI6MTczNDA5MTg1MH0.N86mSvlKU3BYJmbdTwj9jlPQHHP91uU8sL6LvQhuC2A"; // Use quotes for the token
+        
+            const res = await fetch(`/api/user/listings/${currentUser._id}`, {
+              headers: {
+                Authorization: `Bearer ${token}`, // Add the token here
+              },
+            });
+        
+            const data = await res.json();
+            if (!res.ok) {
+              setshowListingsError(true);
+              console.error("Error:", data.message);
+              return;
+            }
+        setUserListing(data);
+            console.log(data); // Check the received data
+          } catch (error) {
+            setshowListingsError(true);
+            console.error("Error:", error);
+          }
+        };
+        
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl text-center font-semibold my-7'>Profile</h1>
@@ -220,6 +245,51 @@ const [updateSuccess,setUpdateSuccess]= useState(false);
       </div>
 
       <p className='text-green-700 mt-5'>{updateSuccess ? 'user is updated successfully': ''}</p>
+
+      <button onClick={handleShowListings}className='text-green-700 w-full'>show listings</button>
+      <p className='text-red-700 mt-5'> {showListingsError ? 'Error while showing listings': ''}</p>
+
+
+      {userListing && userListing.length > 0 && (
+        <div className='flex flex-col gap-4'>
+          <h1 className='text-center mt-7 text-2xl font-semibold'>
+            Your Listings
+          </h1>
+          {userListing.map((listing) => (
+            <div
+              key={listing._id}
+              className='border rounded-lg p-3 flex justify-between items-center gap-4'
+            >
+              <Link to={`/listing/${listing._id}`}>
+   
+                <img
+                  src={listing.imageUrls[0]}
+                  alt='listing cover'
+                  className='h-16 w-16 object-contain'
+                />
+              </Link>
+              <Link
+                className='text-slate-700 font-semibold  hover:underline truncate flex-1'
+                to={`/listing/${listing._id}`}
+              >
+                <p>{listing.name}</p>
+              </Link>
+
+              <div className='flex flex-col item-center'>
+                <button
+                  onClick={() => handleListingDelete(listing._id)}
+                  className='text-red-700 uppercase'
+                >
+                  Delete
+                </button>
+                <Link to={`/update-listing/${listing._id}`}>
+                  <button className='text-green-700 uppercase'>Edit</button>
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
