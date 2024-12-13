@@ -2,6 +2,7 @@
 import bcryptjs from 'bcryptjs';
 import User from '../models/user.model.js';
 import { errorHandler } from '../utils/error.js';
+import Listing from '../models/listing.model.js';
 export const test = (req,res)=>{
     res.json({
         message:'Api route is working!',
@@ -56,5 +57,22 @@ export const test = (req,res)=>{
     }
   };
   
+  export const getUserListings = async (req, res, next) => {
+    try {
+      const { userRef } = req.params;
   
+      // Check if the authenticated user's ID matches the userRef
+      if (req.user.id === userRef) {
+        const listings = await Listing.find({ userRef });
+        if (!listings.length) {
+          return res.status(404).json({ message: 'No listings found for this user.' });
+        }
+        return res.status(200).json(listings);
+      } else {
+        return next(errorHandler(401, 'You can only view your own Listings!'));
+      }
+    } catch (error) {
+      next(error);
+    }
+  };
   
