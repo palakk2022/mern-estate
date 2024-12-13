@@ -16,7 +16,7 @@ const listingSchema = new mongoose.Schema
         type:String,
            required:true,
      },
-     regualarPrice:{
+     regularPrice:{
         type:Number,
         required:true,
      },
