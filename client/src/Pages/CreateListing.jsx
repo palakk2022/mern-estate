@@ -119,6 +119,8 @@
         })
       }
     };
+
+
     const handleSubmit = async (e)=>{
       e.preventDefault();
       setFormSubmitted(true); // Mark form as submitted
@@ -128,7 +130,7 @@
     return;
   }
       try{
-
+          
           if(+formdata.regularPrice < +formdata.discountedPrice) return setError('Discounted Price should be less then Regular Price ')
                 setLoading(true);
                 setError(false);

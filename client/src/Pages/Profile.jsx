@@ -175,6 +175,26 @@ export default function Profile() {
             console.error("Error:", error);
           }
         };
+        const handleListingDelete = async(listingId) =>{
+          const userToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NWE4NzUzNmRhNDhiMTI5NDViYTljNyIsImlhdCI6MTczNDA5MTg1MH0.N86mSvlKU3BYJmbdTwj9jlPQHHP91uU8sL6LvQhuC2A"; // Use quotes for the token
+          try{
+             const res = await fetch(`/api/listing/delete/${listingId}`,{
+              method:'DELETE',
+              headers: {
+                Authorization: `Bearer ${userToken}`, // Include token if required
+            },
+             });
+             const data = await res.json();
+             if(data.success === false){
+              console.log(data.message);
+              return;
+             }
+
+             setUserListing((prev)=> prev.filter((listing)=> listing._id !== listingId));
+          }catch(error){
+          console.log(error.message)
+          }
+        }
         
   return (
     <div className='p-3 max-w-lg mx-auto'>
@@ -263,7 +283,7 @@ export default function Profile() {
               <Link to={`/listing/${listing._id}`}>
    
                 <img
-                  src={listing.imageUrls[0]}
+                  src={`http://localhost:4000${listing.imageUrls[0]}`}
                   alt='listing cover'
                   className='h-16 w-16 object-contain'
                 />
