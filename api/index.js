@@ -38,15 +38,22 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Static folder for serving uploaded files
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 // Multer setup for file upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    const uploadsDir = path.join(__dirname, '..', 'public', 'uploads');
+    //console.log('Uploads directory:', uploadsDir); // Log the destination path
+    if (!fs.existsSync(uploadsDir)) {
+      //console.log('Creating uploads directory...');
+      fs.mkdirSync(uploadsDir, { recursive: true }); // Ensure the folder exists
+    }
+    cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {
     const uniqueName = `${Date.now()}-${file.originalname}`;
+    //console.log('Saving file as:', uniqueName); // Log the file name
     cb(null, uniqueName);
   },
 });
@@ -66,6 +73,7 @@ const upload = multer({
   },
 });
 
+
 // File upload route
 app.post('/api/upload', upload.single('image'), (req, res) => {
   if (!req.file) {
@@ -74,16 +82,13 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
       message: 'No file uploaded!',
     });
   }
+  //console.log('File uploaded successfully:', req.file.path);  // Log the file path on upload
   res.status(200).json({
     success: true,
     message: 'File uploaded successfully!',
-    filePath: `/uploads/${req.file.filename}`, // Ensure this is the correct path to the uploaded file
-
+    filePath: `/uploads/${req.file.filename}`, // Correct file path to be sent back to the frontend
   });
 });
-
-
-
 
 // DELETE route for file deletion
 app.delete('/api/delete-file', (req, res) => {
@@ -97,12 +102,8 @@ app.delete('/api/delete-file', (req, res) => {
     });
   }
 
-  // Get the directory name of the current file (index.js)
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = dirname(__filename);
-
-  // Construct the correct path to the 'uploads' folder in the root directory
-  const fileToDelete = path.join(__dirname, '..', 'uploads', path.basename(filePath));
+  // Construct the correct path to the 'public/uploads' folder
+  const fileToDelete = path.join(__dirname, '..', 'public', 'uploads', path.basename(filePath)); // Corrected path
 
   // Try to delete the file
   fs.unlink(fileToDelete, (err) => {

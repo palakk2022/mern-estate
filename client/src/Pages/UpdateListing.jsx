@@ -90,11 +90,11 @@ useEffect(() => {
   
         // Merge new uploaded images with existing images
         const updatedImages = [...formdata.imageUrls, ...uploadedPaths];
-  
-        setFormdata({
-          ...formdata,
+        setFormdata((prev) => ({
+          ...prev,
           imageUrls: updatedImages,
-        });
+        }));
+        
   
         setFiles([]);
         setUploadMessage('Images uploaded successfully!');
@@ -391,7 +391,7 @@ useEffect(() => {
           {formdata.imageUrls.map((path, index) => (
     <div key={index} className="flex justify-between items-center mt-5">
       <img
-        src={`http://localhost:4000${path}`}
+        src={path}
         alt={`Listing image ${index + 1}`}
         className="w-20 h-20 object-cover rounded-md"
       />
