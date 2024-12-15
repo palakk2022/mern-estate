@@ -4,6 +4,7 @@ import {useNavigate,useParams} from 'react-router-dom';
 export default function CreateListing() {
   const navigate = useNavigate();
   const params = useParams();
+  const { listingId } = useParams(); // Get the listingId from the URL params
   const {currentUser} = useSelector(state => state.user)
   const [files,setFiles]= useState([]);
   const [formSubmitted, setFormSubmitted] = useState(false); // New state
@@ -159,45 +160,32 @@ useEffect(() => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormSubmitted(true); // Mark form as submitted
   
-    // Validate uploaded images
-    if (formdata.imageUrls.length === 0) {
-      setError('Please upload at least one image before creating a listing.');
+    const listingId = params.listingId;  // Ensure this is defined and set
+  
+    if (!listingId) {
+      console.error('Listing ID is not defined');
       return;
     }
   
     try {
-      if (+formdata.regularPrice < +formdata.discountedPrice) {
-        setError('Discounted Price should be less than Regular Price');
-        return;
-      }
-      setLoading(true);
-      setError(false);
-  
-      const res = await fetch(`/api/listing/update/${params.listingId}`, {
+      const response = await fetch(`/api/listing/update/${listingId}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formdata,
-          imageUrls: formdata.imageUrls, // Use formdata.imageUrls for images
-          userRef: currentUser._id,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formdata), // Send the form data with the update
       });
   
-      const data = await res.json();
-      setLoading(false);
+      const data = await response.json();
   
-      if (!data.success) {
-        setError(data.message);
+      if (data.success) {
+        console.log('Listing updated successfully');
+        // Navigate to a new page (for example, the listing details page or listings list)
+        navigate(`/listing/${listingId}`);  // Adjust this URL based on your routing structure
       } else {
-        navigate(`/listing/${data._id}`);
+        console.error('Update failed:', data.message);
       }
     } catch (error) {
-      setError(error.message);
-      setLoading(false);
+      console.error('Error during update:', error);
     }
   };
   

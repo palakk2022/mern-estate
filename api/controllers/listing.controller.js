@@ -32,33 +32,44 @@ export const deleteListing = async (req, res, next) => {
 };
 
 
- export const updateListings = async (req, res, next) => {
+export const updateListings = async (req, res, next) => {
   try {
-    const updatedListing = await Listing.findByIdAndUpdate(
-      req.params.listingId, // Use listingId from the request params
-      req.body, // The new data to update
-      { new: true } // Return the updated document
-    );
+    const listingId = req.params.listingId; // Get the listingId from params
+    if (!listingId) {
+      return res.status(400).json({ success: false, message: 'Listing ID is required' });
+    }
 
+    // Update the listing logic here
+    const updatedListing = await Listing.findByIdAndUpdate(listingId, req.body, { new: true });
     if (!updatedListing) {
       return res.status(404).json({ success: false, message: 'Listing not found' });
     }
 
-    res.json({ success: true, message: 'Listing updated successfully', listing: updatedListing });
+    res.status(200).json({
+      success: true,
+      message: 'Listing updated successfully',
+      listing: updatedListing,
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-  }
-
-
-export const getListing  = async (req,res,next)=>{
-  try{
-     const listing = await Listing.findById(req.params.id);
-     if(!listing){
-      return next(errorHandler(404,'Listing not found!'))
-     }
-     res.status(200).json(listing);
-  }catch(error){
+    console.error(error);
     next(error);
   }
-}
+};
+
+
+
+export const getListing = async (req, res, next) => {
+  try {
+    const listingId = req.params.id; // This should get the listingId from the URL
+    //console.log('Listing ID:', listingId); // Log the ID to confirm
+    const listing = await Listing.findById(listingId);
+
+    if (!listing) {
+      return next(errorHandler(404, 'Listing not found!'));
+    }
+
+    res.status(200).json(listing);
+  } catch (error) {
+    next(error);
+  }
+};
