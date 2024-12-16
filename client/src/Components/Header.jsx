@@ -48,9 +48,9 @@ export default function Header() {
         
       </form>
       <ul className='flex gap-4'>
-        <Link to="/"><li className='hidden sm:inline text-slate-700 hover:bg-slate-300 hover:underline' >Properties</li></Link>
+        <Link to="/"><li className='hidden sm:inline text-slate-700 hover:bg-slate-300 hover:underline' >Home</li></Link>
          <Link to="/about"><li  className='hidden sm:inline  text-slate-700 hover:underline hover:bg-slate-300'>About</li></Link> 
-        <Link to="/contact-us"><li  className='hidden sm:inline  text-slate-700 hover:underline hover:bg-slate-300' >Contact-Us</li></Link>
+
         <Link to="/profile">
         {currentUser ? (
     <img  className='rounded-full h-7 w-7 object-cover'src = {currentUser.avatar} alt='Profile'/>

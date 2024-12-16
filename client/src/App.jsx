@@ -3,7 +3,7 @@ import Properties from './Pages/Properties';
 import Signin from './Pages/Signin';
 import Signup from './Pages/Signup';
 import About from './Pages/About';
-import Contactus from './Pages/Contactus';
+//import Contactus from './Pages/Contactus';
 import Profile from './Pages/Profile';
 import Header from './Components/Header';
 import PrivateRoute from './Components/PrivateRoute';
@@ -24,7 +24,7 @@ export default function App() {
       <Route path="/sign-in" element={<Signin  />}/>
       <Route path="/sign-Up" element={ <Signup />}/>
       <Route path="/about" element={<About />}/>
-      <Route path="/contact-us" element={<Contactus/>}/>
+      
       <Route path="/search"element={<Search/>}/>
       <Route path="/listing/:listingId" element={<Listing/>}/>
 
